@@ -1,7 +1,7 @@
 import { useProducts } from "../context/ProductContext";
 
 export default function OutOfStock() {
-    const products = useProducts();
+    const {products} = useProducts();
     const outOfStockProducts = products.filter(product => !product.stocked);
 
     return (
