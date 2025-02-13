@@ -18,7 +18,7 @@ const productReducer = (state: Product[], action: {type: ReducerActions, payload
         case ReducerActions.DELETE:
             return state.filter(product => product.id !== payload.id);
         case ReducerActions.ADD:
-            return [...state, payload];
+            return JSON.parse(JSON.stringify([...state, payload]));
         case ReducerActions.EDIT:
             return state.map(product => product.id === payload.id ? payload : product);
         default:
