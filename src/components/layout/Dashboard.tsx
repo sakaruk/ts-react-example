@@ -6,6 +6,7 @@ export default function Dashboard() {
       <ul>
         <li><Link to="/">Home</Link></li>
         <li><Link to="out-of-stock">Out of stock</Link></li>
+        <li><Link to="add">Add Product</Link></li>
       </ul>
       <Outlet />
     </div>
