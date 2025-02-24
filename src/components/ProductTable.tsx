@@ -1,8 +1,10 @@
-import { Fragment } from "react";
 import { CATEGORIES } from "../data/products";
-import ProductCategoryRow from "./ProductCategoryRow";
-import ProductRow from "./ProductRow";
 import { ReducerActions, useProducts } from "../context/ProductContext";
+import { Button, Table, TableProps, Tooltip, Typography } from "antd";
+import { Category, Product } from "../types/common";
+import { DeleteFilled } from "@ant-design/icons";
+
+const { Text } = Typography;
 
 interface ProductTableProps {
     filterText: string;
@@ -26,27 +28,42 @@ export default function ProductTable({ filterText, inStockOnly }: ProductTablePr
       }
     }
 
+    const categoryColumns: TableProps<Category>['columns'] = [
+      { title: 'Categories', key: 'name', render: (record: Category) => (
+        <Text strong>{record.name}</Text>
+      ) }
+    ];
+
+    const productColumns: TableProps<Product>['columns'] = [
+      { title: 'Name', key: 'name' , render: (record: Product) => (
+        <Text type={!record.stocked ? 'danger' : 'success'} >
+           {record.name}
+        </Text>
+      ) },
+      { title: 'Price', dataIndex: 'price', key: 'price' },
+      { title: 'Action', key: 'action', render: (record: Product) => (
+        <Tooltip title="Delete">
+           <Button danger title="Delete" onClick={()=>handleDelete(record.id)}><DeleteFilled /></Button>
+        </Tooltip>
+      ) }
+    ]
+
+    const expandedRowRender = (record: Category) => (
+      <Table<Product>
+        rowKey="id"
+        columns={productColumns}
+        dataSource={displayProducts.filter((product)=> product.category_id === record.id)}
+        pagination={false}
+      />
+    );
+
     return (
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Price</th>
-          </tr>
-        </thead>
-        <tbody>
-          {
-          CATEGORIES.map((category)=>(
-            <Fragment key={category.id}>
-              <ProductCategoryRow category={category.name} />
-              {
-                displayProducts.filter(product=>product.category_id === category.id).map((product)=>(
-                  <ProductRow key={product.id} product={product} handleDelete={handleDelete} />
-                ))
-              }
-            </Fragment>
-          ))
-          }</tbody>
-      </table>
+      <Table<Category>
+        columns={categoryColumns}
+        rowKey="id"
+        expandable={{ expandedRowRender, defaultExpandedRowKeys: CATEGORIES.map(category=> category.id) }}
+        dataSource={CATEGORIES}
+        pagination={false}
+      />
     );
   }
